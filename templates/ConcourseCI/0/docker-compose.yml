@@ -13,7 +13,7 @@ concourse-datavolume:
   labels:
     io.rancher.container.hostname_override: container_name
     io.rancher.container.start_once: 'true'
-    io.rancher.sidekicks: concourse-web,concourse-worker
+#    io.rancher.sidekicks: concourse-web,concourse-worker
   volumes:
     - /var/keys
   command: sh -c "apk --update add openssh &&
