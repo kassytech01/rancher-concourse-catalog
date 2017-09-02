@@ -13,7 +13,6 @@ concourse-datavolume:
   labels:
     io.rancher.container.hostname_override: container_name
     io.rancher.container.start_once: 'true'
-#    io.rancher.sidekicks: concourse-web,concourse-worker
   volumes:
     - /var/keys
   command: sh -c "apk --update add openssh &&
@@ -29,7 +28,8 @@ concourse-web:
   image: concourse/concourse:3.4.1
   labels:
     io.rancher.container.hostname_override: container_name
-  links: [concourse-db, concourse-datavolume]
+    io.rancher.sidekicks: concourse-datavolume
+  links: [concourse-db]
   command: web
   ports: ["8080:8080"]
   volumes_from:
@@ -50,7 +50,8 @@ concourse-worker:
   privileged: true
   labels:
     io.rancher.container.hostname_override: container_name
-  links: [concourse-web, concourse-datavolume]
+    io.rancher.sidekicks: concourse-datavolume
+  links: [concourse-web]
   command: worker
   volumes_from:
     - concourse-datavolume
