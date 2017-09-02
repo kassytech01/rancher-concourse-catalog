@@ -12,7 +12,7 @@ concourse-datavolume:
   image: alpine
   labels:
     io.rancher.container.hostname_override: container_name
-    io.rancher.container.start_once: true
+    io.rancher.container.start_once: 'true'
     io.rancher.sidekicks: concourse-web,concourse-worker
   volumes:
     - /var/keys
@@ -35,7 +35,9 @@ concourse-web:
   volumes_from:
     - concourse-datavolume
   environment:
-    CONCOURSE_DEVELOPMENT_MODE: true
+    CONCOURSE_BASIC_AUTH_USERNAME: concourse
+    CONCOURSE_BASIC_AUTH_PASSWORD: changeme
+    CONCOURSE_DEVELOPMENT_MODE: 'true'
     CONCOURSE_EXTERNAL_URL: "http://${CONCOURSE_EXTERNAL_ADDR}:8080"
     CONCOURSE_TSA_HOST_KEY: "/var/keys/web/tsa_host_key"
     CONCOURSE_TSA_AUTHORIZED_KEYS: "/var/keys/web/authorized_worker_keys"
