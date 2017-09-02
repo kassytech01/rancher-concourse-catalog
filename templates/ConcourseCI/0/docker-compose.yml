@@ -5,7 +5,7 @@ concourse-db:
   environment:
     POSTGRES_DB: concourse
     POSTGRES_USER: concourse
-    POSTGRES_PASSWORD: leanswpass
+    POSTGRES_PASSWORD: hogefuga
     PGDATA: /database
 
 concourse-datavolume:
@@ -26,7 +26,7 @@ concourse-datavolume:
     cp /var/keys/web/tsa_host_key.pub /var/keys/worker"
 
 concourse-web:
-  image: concourse/concourse:2.4.0
+  image: concourse/concourse:3.4.1
   labels:
     io.rancher.container.hostname_override: container_name
   links: [concourse-db]
@@ -41,10 +41,10 @@ concourse-web:
     CONCOURSE_TSA_AUTHORIZED_KEYS: "/var/keys/web/authorized_worker_keys"
     CONCOURSE_SESSION_SIGNING_KEY: "/var/keys/web/session_signing_key"
     CONCOURSE_POSTGRES_DATA_SOURCE: |-
-      postgres://concourse:leanswpass@concourse-db:5432/concourse?sslmode=disable
+      postgres://concourse:hogefuga@concourse-db:5432/concourse?sslmode=disable
 
 concourse-worker:
-  image: concourse/concourse:2.4.0
+  image: concourse/concourse:3.4.1
   privileged: true
   labels:
     io.rancher.container.hostname_override: container_name
