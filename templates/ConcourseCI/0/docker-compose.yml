@@ -29,7 +29,7 @@ concourse-web:
   image: concourse/concourse:3.4.1
   labels:
     io.rancher.container.hostname_override: container_name
-  links: [concourse-db]
+  links: [concourse-db, concourse-datavolume]
   command: web
   ports: ["8080:8080"]
   volumes_from:
@@ -50,7 +50,7 @@ concourse-worker:
   privileged: true
   labels:
     io.rancher.container.hostname_override: container_name
-  links: [concourse-web]
+  links: [concourse-web, concourse-datavolume]
   command: worker
   volumes_from:
     - concourse-datavolume
