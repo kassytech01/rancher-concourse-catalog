@@ -31,14 +31,14 @@ concourse-web:
     io.rancher.sidekicks: concourse-datavolume
   links: [concourse-db]
   command: web
-  ports: ["8080:8080"]
+  ports: ["8081:8081"]
   volumes_from:
     - concourse-datavolume
   environment:
     CONCOURSE_BASIC_AUTH_USERNAME: concourse
     CONCOURSE_BASIC_AUTH_PASSWORD: changeme
     CONCOURSE_DEVELOPMENT_MODE: 'true'
-    CONCOURSE_EXTERNAL_URL: "http://${CONCOURSE_EXTERNAL_ADDR}:8080"
+    CONCOURSE_EXTERNAL_URL: "http://${CONCOURSE_EXTERNAL_ADDR}:8081"
     CONCOURSE_TSA_HOST_KEY: "/var/keys/web/tsa_host_key"
     CONCOURSE_TSA_AUTHORIZED_KEYS: "/var/keys/web/authorized_worker_keys"
     CONCOURSE_SESSION_SIGNING_KEY: "/var/keys/web/session_signing_key"
