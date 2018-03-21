@@ -29,8 +29,6 @@ concourse-web:
   labels:
     io.rancher.container.hostname_override: container_name
   links: [concourse-db]
-  # depends_on add(try)
-  depends_on: [concourse-db]
   command: web
   ports: ["8081:8080"]
   volumes_from:
@@ -54,8 +52,6 @@ concourse-worker:
     io.rancher.container.hostname_override: container_name
     io.rancher.sidekicks: concourse-datavolume, concourse-web
   links: [concourse-web]
-  # depends_on add(try)
-  depends_on: [concourse-web]
   command: worker
   volumes_from:
     - concourse-datavolume
