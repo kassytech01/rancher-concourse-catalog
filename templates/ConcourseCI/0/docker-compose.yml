@@ -31,7 +31,7 @@ concourse-web:
     io.rancher.sidekicks: concourse-datavolume
   links: [concourse-db]
   command: web
-  ports: ["8081:8081"]
+  ports: ["8081:8080"]
   volumes_from:
     - concourse-datavolume
   environment:
