@@ -1,11 +1,11 @@
 concourse-db:
-  image: postgres:9.5
+  image: postgres:9.6
   labels:
     io.rancher.container.hostname_override: container_name
   environment:
     POSTGRES_DB: concourse
     POSTGRES_USER: concourse
-    POSTGRES_PASSWORD: hogefuga
+    POSTGRES_PASSWORD: cidb001
     PGDATA: /database
 
 concourse-datavolume:
@@ -25,15 +25,17 @@ concourse-datavolume:
     cp /var/keys/web/tsa_host_key.pub /var/keys/worker"
 
 concourse-web:
-  image: concourse/concourse:3.4.1
+  image: concourse/concourse:3.9.2
   labels:
     io.rancher.container.hostname_override: container_name
-    # io.rancher.sidekicks: concourse-datavolume
   links: [concourse-db]
+  # depends_on add(try)
+  depends_on: [concourse-db]
   command: web
   ports: ["8081:8080"]
   volumes_from:
     - concourse-datavolume
+  restart: unless-stopped # required so that it retries until concourse-db comes up
   environment:
     CONCOURSE_BASIC_AUTH_USERNAME: concourse
     CONCOURSE_BASIC_AUTH_PASSWORD: changeme
@@ -43,15 +45,17 @@ concourse-web:
     CONCOURSE_TSA_AUTHORIZED_KEYS: "/var/keys/web/authorized_worker_keys"
     CONCOURSE_SESSION_SIGNING_KEY: "/var/keys/web/session_signing_key"
     CONCOURSE_POSTGRES_DATA_SOURCE: |-
-      postgres://concourse:hogefuga@concourse-db:5432/concourse?sslmode=disable
+      postgres://concourse:cidb001@concourse-db:5432/concourse?sslmode=disable
 
 concourse-worker:
-  image: concourse/concourse:3.4.1
+  image: concourse/concourse:3.9.2
   privileged: true
   labels:
     io.rancher.container.hostname_override: container_name
     io.rancher.sidekicks: concourse-datavolume, concourse-web
   links: [concourse-web]
+  # depends_on add(try)
+  depends_on: [concourse-web]
   command: worker
   volumes_from:
     - concourse-datavolume
