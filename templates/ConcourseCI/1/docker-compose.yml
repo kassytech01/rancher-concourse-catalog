@@ -23,6 +23,10 @@ concourse-datavolume:
     ssh-keygen -t rsa -f /var/keys/worker/worker_key -N '' &&
     cp /var/keys/worker/worker_key.pub /var/keys/web/authorized_worker_keys &&
     cp /var/keys/web/tsa_host_key.pub /var/keys/worker"
+  environment:
+    http_proxy: http://bpawsproxy.bpaws.local:8080
+    https_proxy: http://bpawsproxy.bpaws.local:8080
+    no_proxy: 127.0.0.1,localhost,.bpaws.local,169.254.169.254,s3.ap-northeast-1.amazonaws.com,s3-ap-northeast-1.amazonaws.com,s3.dualstack.ap-northeast-1.amazonaws.com
 
 concourse-web:
   image: concourse/concourse:3.9.2
