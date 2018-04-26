@@ -10,7 +10,7 @@
       label: "Concourse External Address"
       type: "string"
       required: true
-      default: "127.21.200.20"
+      default: "172.21.200.20"
 
 concourse-db:
   scale: 1
