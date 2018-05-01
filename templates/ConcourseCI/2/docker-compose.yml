@@ -32,6 +32,7 @@ concourse-web:
   image: concourse/concourse:3.10.0
   labels:
     io.rancher.container.hostname_override: container_name
+    io.rancher.sidekicks: concourse-datavolume
   links: [concourse-db]
   command: web
   ports: ["8081:8080"]
