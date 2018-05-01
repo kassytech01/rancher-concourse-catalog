@@ -1,0 +1,61 @@
+concourse-db:
+  image: postgres:9.6
+  labels:
+    io.rancher.container.hostname_override: container_name
+  environment:
+    POSTGRES_DB: concourse
+    POSTGRES_USER: concourse
+    POSTGRES_PASSWORD: cidb001
+    PGDATA: /database
+
+concourse-datavolume:
+  image: alpine
+  labels:
+    io.rancher.container.hostname_override: container_name
+    io.rancher.container.start_once: 'true'
+  volumes:
+    - /concourse-keys
+  command: sh -c "apk --update add openssh &&
+    rm -rf /var/cache/apk/* &&
+    mkdir -p /concourse-keys &&
+    ssh-keygen -t rsa -f /concourse-keys/tsa_host_key -N '' &&
+    ssh-keygen -t rsa -f /concourse-keys/session_signing_key -N '' &&
+    ssh-keygen -t rsa -f /concourse-keys/worker_key -N ''
+
+concourse-web:
+  image: concourse/concourse:3.10.0
+  labels:
+    io.rancher.container.hostname_override: container_name
+  command: web
+  links:
+    - concourse-db
+  ports: ["8081:8080"]
+  volumes_from:
+    - concourse-datavolume
+  restart: unless-stopped # required so that it retries until concourse-db comes up
+  environment:
+    CONCOURSE_BASIC_AUTH_USERNAME: concourse
+    CONCOURSE_BASIC_AUTH_PASSWORD: concourse
+    CONCOURSE_EXTERNAL_URL: "http://${CONCOURSE_EXTERNAL_ADDR}:8081"
+    CONCOURSE_POSTGRES_HOST: concourse-db
+    CONCOURSE_POSTGRES_USER: concourse
+    CONCOURSE_POSTGRES_PASSWORD: cidb001
+    CONCOURSE_POSTGRES_DATABASE: concourse
+    CONCOURSE_NO_REALLY_I_DONT_WANT_ANY_AUTH:
+    #CONCOURSE_POSTGRES_DATA_SOURCE: |-
+    #  postgres://concourse:cidb001@concourse-db:5432/concourse?sslmode=disable
+
+concourse-worker:
+  image: concourse/concourse:3.10.0
+  labels:
+    io.rancher.container.hostname_override: container_name
+    io.rancher.sidekicks: concourse-datavolume, concourse-web
+  command: worker
+  privileged: true
+  links:
+    - concourse-web
+  volumes_from:
+    - concourse-datavolume
+  environment:
+    CONCOURSE_TSA_HOST: concourse-web:2222
+    CONCOURSE_GARDEN_NETWORK:
