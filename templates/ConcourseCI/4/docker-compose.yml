@@ -1,0 +1,30 @@
+concourse-db:
+  image: postgres:9.6
+  labels:
+    io.rancher.container.hostname_override: container_name
+  environment:
+    POSTGRES_DB: concourse
+    POSTGRES_USER: concourse
+    POSTGRES_PASSWORD: cidb001
+    PGDATA: /database
+
+concourse:
+  image: concourse/concourse:3.10.0
+  labels:
+    io.rancher.container.hostname_override: container_name
+  command: quickstart
+  privileged: true
+  links: [concourse-db]
+  #depends_on: [concourse-db]
+  ports: ["8081:8080"]
+  restart: unless-stopped # required so that it retries until concourse-db comes up
+  environment:
+    CONCOURSE_POSTGRES_HOST: concourse-db
+    CONCOURSE_POSTGRES_USER: concourse
+    CONCOURSE_POSTGRES_PASSWORD: cidb001
+    CONCOURSE_POSTGRES_DATABASE: concourse
+    CONCOURSE_EXTERNAL_URL: "http://${CONCOURSE_EXTERNAL_ADDR}:8081"
+    CONCOURSE_BASIC_AUTH_USERNAME: concourse
+    CONCOURSE_BASIC_AUTH_PASSWORD: concourse
+    CONCOURSE_NO_REALLY_I_DONT_WANT_ANY_AUTH: true
+    CONCOURSE_GARDEN_NETWORK:
