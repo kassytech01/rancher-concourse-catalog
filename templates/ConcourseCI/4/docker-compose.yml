@@ -20,7 +20,7 @@ concourse-datavolume:
     mkdir -p /concourse-keys &&
     ssh-keygen -t rsa -f /concourse-keys/tsa_host_key -N '' &&
     ssh-keygen -t rsa -f /concourse-keys/session_signing_key -N '' &&
-    ssh-keygen -t rsa -f /concourse-keys/worker_key -N ''
+    ssh-keygen -t rsa -f /concourse-keys/worker_key -N ''"
 
 concourse-web:
   image: concourse/concourse:3.10.0
@@ -42,8 +42,6 @@ concourse-web:
     CONCOURSE_POSTGRES_PASSWORD: cidb001
     CONCOURSE_POSTGRES_DATABASE: concourse
     CONCOURSE_NO_REALLY_I_DONT_WANT_ANY_AUTH:
-    #CONCOURSE_POSTGRES_DATA_SOURCE: |-
-    #  postgres://concourse:cidb001@concourse-db:5432/concourse?sslmode=disable
 
 concourse-worker:
   image: concourse/concourse:3.10.0
